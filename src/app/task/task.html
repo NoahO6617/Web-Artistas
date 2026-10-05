@@ -1,0 +1,6 @@
+<div class="task" [class.completed-task]="task().isCompleted" >
+  <p>Id de la tarea: {{ task().id }}</p>
+  <p>{{ task().name }}</p>
+  <input type="checkbox" [value]="task().isCompleted" [checked]="task().isCompleted"
+    (change)="updateCompletion()" />
+</div>

@@ -1,0 +1,14 @@
+<h1>Lista de tareas</h1>
+
+@for (task of taskList(); track task.id) {
+  <app-task
+    [task]="task"
+    (checkboxValue)="updateTaskValue($event)"
+  />
+
+  <a [routerLink]="['/tareas', task.id]">
+    Ver detalle
+  </a>
+
+  <br>
+}
