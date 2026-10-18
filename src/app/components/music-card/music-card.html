@@ -1,0 +1,28 @@
+<a
+  class="music-card"
+  [routerLink]="['/detalle', item.type, item.id]"
+>
+  <div class="cover">
+    <img
+      *ngIf="item.image; else placeholder"
+      [src]="item.image"
+      [alt]="item.title"
+      loading="lazy"
+    />
+
+    <ng-template #placeholder>
+      <div class="placeholder">
+        <span *ngIf="item.type === 'track'">♫</span>
+        <span *ngIf="item.type === 'artist'">♙</span>
+        <span *ngIf="item.type === 'release'">▤</span>
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="info">
+    <span class="type">{{ typeLabel }}</span>
+    <h3>{{ item.title }}</h3>
+    <p>{{ item.subtitle }}</p>
+    <p *ngIf="item.year" class="year">{{ item.year }}</p>
+  </div>
+</a>

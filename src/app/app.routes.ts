@@ -1,19 +1,12 @@
+
 import { Routes } from '@angular/router';
-import { Home } from './home/home';
-import { TaskDetail } from './task-detail/task-detail';
-import { NotFound } from './not-found/not-found';
+import { Home } from './pages/home/home';
+import { Search } from './pages/search/search';
+import { Detail } from './pages/detail/detail';
 
 export const routes: Routes = [
-  {
-    path: '',
-    component: Home,
-  },
-  {
-    path: 'tareas/:id',
-    component: TaskDetail,
-  },
-  {
-    path: '**',
-    component: NotFound,
-  },
+  { path: '', component: Home },
+  { path: 'buscar', component: Search },
+  { path: 'detalle/:type/:id', component: Detail },
+  { path: '**', redirectTo: '' }
 ];

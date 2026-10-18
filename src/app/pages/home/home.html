@@ -1,0 +1,47 @@
+<main class="home">
+  <section class="hero">
+    <p class="eyebrow">TU UNIVERSO MUSICAL</p>
+
+    <h1>
+      Descubre música.<br />
+      Encuentra tu estilo.
+    </h1>
+
+    <p class="description">
+      Explora canciones, descubre artistas y encuentra álbumes
+      de todo tipo.
+    </p>
+
+    <a routerLink="/buscar" class="cta">
+      <span>⌕</span>
+      Explorar catálogo
+    </a>
+  </section>
+
+  <section class="categories">
+    <h2>¿Qué quieres descubrir?</h2>
+
+    <div class="category-grid">
+      <a routerLink="/buscar" [queryParams]="{ type: 'track' }"
+         class="category-card">
+        <span class="symbol">♫</span>
+        <h3>Canciones</h3>
+        <p>Encuentra temas por título.</p>
+      </a>
+
+      <a routerLink="/buscar" [queryParams]="{ type: 'artist' }"
+         class="category-card">
+        <span class="symbol">♙</span>
+        <h3>Artistas</h3>
+        <p>Descubre artistas y grupos.</p>
+      </a>
+
+      <a routerLink="/buscar" [queryParams]="{ type: 'release' }"
+         class="category-card">
+        <span class="symbol">▤</span>
+        <h3>Álbumes</h3>
+        <p>Explora discos y lanzamientos.</p>
+      </a>
+    </div>
+  </section>
+</main>

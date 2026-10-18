@@ -1,0 +1,59 @@
+.detail-page {
+  width: min(900px, 92%);
+  margin: auto;
+  padding: 40px 0 80px;
+}
+
+.back-link {
+  color: #c4b5fd;
+  text-decoration: none;
+}
+
+.detail-card {
+  margin-top: 28px;
+  padding: clamp(24px, 5vw, 52px);
+  text-align: center;
+  border: 1px solid #30303c;
+  border-radius: 22px;
+  background: #1a1a23;
+}
+
+.detail-icon {
+  color: #c4b5fd;
+  font-size: 72px;
+}
+
+.eyebrow {
+  color: #c4b5fd;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.detail-card h1 {
+  font-size: clamp(28px, 5vw, 42px);
+}
+
+.detail-card > p {
+  color: #b1b1bd;
+  line-height: 1.7;
+}
+
+.identifier {
+  overflow-wrap: anywhere;
+}
+
+.notice {
+  margin: 24px 0;
+}
+
+.button {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: #c4b5fd;
+  color: #20182d;
+  text-decoration: none;
+  font-weight: 700;
+}

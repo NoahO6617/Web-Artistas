@@ -1,0 +1,30 @@
+
+<section class="search-page">
+  <h1>Buscar música</h1>
+
+  <app-search-bar
+    (queryChange)="onQueryChange($event)">
+  </app-search-bar>
+
+  <div class="filters">
+    <button type="button" (click)="onFilterChange('all')">Todo</button>
+    <button type="button" (click)="onFilterChange('track')">Canciones</button>
+    <button type="button" (click)="onFilterChange('artist')">Artistas</button>
+    <button type="button" (click)="onFilterChange('release')">Álbumes</button>
+  </div>
+
+  <p *ngIf="loading">Buscando...</p>
+  <p *ngIf="error">{{ error }}</p>
+
+  <div class="music-grid" *ngIf="!loading && items.length > 0">
+    <app-music-card
+      *ngFor="let item of items"
+      [item]="item">
+    </app-music-card>
+  </div>
+
+  <p *ngIf="!loading && query && !error && items.length === 0">
+    No se han encontrado resultados.
+  </p>
+</section>
+

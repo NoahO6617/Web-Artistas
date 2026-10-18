@@ -1,0 +1,30 @@
+<main class="detail-page">
+  <a routerLink="/buscar" class="back-link">
+    ← Volver al buscador
+  </a>
+
+  <section class="detail-card">
+    <div class="detail-icon">♫</div>
+
+    <p class="eyebrow">{{ typeLabel }}</p>
+
+    <h1>Detalle musical</h1>
+
+    <p>
+      Has seleccionado un elemento del catálogo musical.
+    </p>
+
+    <p class="identifier">
+      Tipo: {{ type }} · Identificador: {{ id }}
+    </p>
+
+    <p class="notice">
+      La información detallada estará disponible cuando
+      conectemos esta vista al endpoint correspondiente.
+    </p>
+
+    <a routerLink="/buscar" class="button">
+      Volver a buscar
+    </a>
+  </section>
+</main>

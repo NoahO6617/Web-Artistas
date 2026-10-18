@@ -1,0 +1,57 @@
+:host {
+  display: block;
+  background: #15151d;
+  border-bottom: 1px solid #30303a;
+}
+
+.navbar {
+  width: min(1200px, 92%);
+  min-height: 76px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 22px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.logo {
+  color: #c4b5fd;
+  font-size: 32px;
+}
+
+nav {
+  display: flex;
+  gap: 24px;
+}
+
+nav a {
+  color: #aaaab8;
+  text-decoration: none;
+}
+
+nav a:hover,
+nav a.active {
+  color: #c4b5fd;
+}
+
+@media (max-width: 500px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 0;
+  }
+
+  nav {
+    gap: 16px;
+  }
+}

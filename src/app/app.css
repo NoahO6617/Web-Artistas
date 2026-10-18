@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.footer {
+  margin-top: auto;
+  padding: 24px;
+  border-top: 1px solid #292934;
+  text-align: center;
+  color: #858592;
+  font-size: 13px;
+}
