@@ -1,22 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CallbackComponent } from './callback.component';
 
-describe('CallbackComponent', () => {
-  let component: CallbackComponent;
-  let fixture: ComponentFixture<CallbackComponent>;
+import { TestBed } from '@angular/core/testing';
+import { describe, beforeEach, it, expect } from 'vitest';
+import { provideRouter } from '@angular/router';
+import { Callback } from './callback.component';
 
+describe('Callback', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CallbackComponent]
-    })
-      .compileComponents();
-
-    fixture = TestBed.createComponent(CallbackComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+      imports: [Callback],
+      providers: [provideRouter([])]
+    }).compileComponents();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
+    const fixture = TestBed.createComponent(Callback);
+    const component = fixture.componentInstance;
+
     expect(component).toBeTruthy();
   });
 });

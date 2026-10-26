@@ -63,27 +63,52 @@ export class MusicService {
     return params;
   }
 
-  searchTracks(query: string): Observable<MusicSearchResponse> {
-    return this.http.get<ApiResponse<ApiTrack>>(
-      `${this.baseUrl}/track/search`,
-      { params: this.params(query, true) }
-    ).pipe(
-      map(response => {
-        const tracks = response.results ?? [];
 
-        return {
-          total: response.estimatedTotalItems ?? tracks.length,
-          results: tracks.map(track => ({
-            id: track.id,
-            title: track.title,
-            subtitle: track.artist?.name ?? 'Artista desconocido',
-            type: 'track' as const,
-            duration: track.duration
-          }))
-        };
-      })
-    );
+searchTracks(query: string): Observable<MusicSearchResponse> {
+  const token =
+    typeof localStorage !== 'undefined'
+      ? localStorage.getItem('spotify_access_token')
+      : null;
+
+  if (!token) {
+    return of({ results: [], total: 0 });
   }
+
+  const params = new HttpParams()
+    .set('q', query)
+    .set('type', 'track')
+    .set('limit', '12')
+    .set('market', 'ES');
+
+  return this.http.get<any>(
+    'https://api.spotify.com/v1/search',
+    {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  ).pipe(
+    map(response => {
+      const tracks = response.tracks?.items ?? [];
+
+      return {
+        total: response.tracks?.total ?? tracks.length,
+        results: tracks.map((track: any) => ({
+          id: track.id,
+          title: track.name,
+          subtitle: track.artists
+            .map((artist: any) => artist.name)
+            .join(', '),
+          type: 'track' as const,
+          image: track.album?.images?.[0]?.url,
+          duration: Math.floor(track.duration_ms / 1000)
+        }))
+      };
+    })
+  );
+}
+
 
   searchArtists(query: string): Observable<MusicSearchResponse> {
     return this.http.get<ApiResponse<ApiArtist>>(

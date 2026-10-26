@@ -1,6 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpotifyAuthService } from '../../services/spotify-auth.service';
 
@@ -28,6 +28,8 @@ import { SpotifyAuthService } from '../../services/spotify-auth.service';
 export class Callback implements OnInit {
   message = 'Procesando autorización...';
 
+  private platformId = inject(PLATFORM_ID);
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -35,6 +37,11 @@ export class Callback implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    // Evita acceder a sessionStorage durante el renderizado en el servidor.
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const params = this.route.snapshot.queryParamMap;
 
     const code = params.get('code');

@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpotifyAuthService } from '../../services/spotify-auth.service';
 import { MusicService } from '../../services/music.service';
 import { MusicCard } from '../../components/music-card/music-card';
 import { MusicItem } from '../../models/music.model';
-
 @Component({
   selector: 'app-home',
   standalone: true,

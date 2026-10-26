@@ -2,7 +2,7 @@ export type MusicType = 'track' | 'artist' | 'release';
 export type SearchFilter = 'all' | MusicType;
 
 export interface MusicItem {
-  id: number;
+  id: string | number;
   title: string;
   subtitle: string;
   type: MusicType;
