@@ -1,47 +1,91 @@
 <main class="home">
+
   <section class="hero">
+
     <p class="eyebrow">TU UNIVERSO MUSICAL</p>
 
     <h1>
-      Descubre música.<br />
-      Encuentra tu estilo.
+      Encuentra tu<br>
+      próxima canción.
     </h1>
 
     <p class="description">
-      Explora canciones, descubre artistas y encuentra álbumes
-      de todo tipo.
+      Busca canciones, descubre nuevos artistas
+      y explora el mundo de la música.
+    </p>
+    
+    <button type="button" (click)="spotifyAuth.login()">
+    Conectar con Spotify
+    </button>
+
+    <form class="search-bar" (ngSubmit)="searchSongs()">
+
+      <span class="search-icon">⌕</span>
+
+      <input
+        type="search"
+        name="query"
+        [(ngModel)]="query"
+        placeholder="¿Qué canción estás buscando?"
+        aria-label="Buscar canciones"
+      >
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Buscando...' : 'Buscar' }}
+      </button>
+
+    </form>
+
+  </section>
+
+  <section class="results">
+
+    <h2 *ngIf="searched">
+      Resultados de búsqueda
+    </h2>
+
+    <p *ngIf="loading" class="message">
+      Buscando canciones...
     </p>
 
-    <a routerLink="/buscar" class="cta">
-      <span>⌕</span>
-      Explorar catálogo
-    </a>
-  </section>
+    <p *ngIf="error" class="error">
+      {{ error }}
+    </p>
 
-  <section class="categories">
-    <h2>¿Qué quieres descubrir?</h2>
+    <div
+      class="music-grid"
+      *ngIf="!loading && songs.length > 0"
+    >
 
-    <div class="category-grid">
-      <a routerLink="/buscar" [queryParams]="{ type: 'track' }"
-         class="category-card">
-        <span class="symbol">♫</span>
-        <h3>Canciones</h3>
-        <p>Encuentra temas por título.</p>
-      </a>
+      <app-music-card
+        *ngFor="let song of songs"
+        [item]="song">
+      </app-music-card>
 
-      <a routerLink="/buscar" [queryParams]="{ type: 'artist' }"
-         class="category-card">
-        <span class="symbol">♙</span>
-        <h3>Artistas</h3>
-        <p>Descubre artistas y grupos.</p>
-      </a>
-
-      <a routerLink="/buscar" [queryParams]="{ type: 'release' }"
-         class="category-card">
-        <span class="symbol">▤</span>
-        <h3>Álbumes</h3>
-        <p>Explora discos y lanzamientos.</p>
-      </a>
     </div>
+
+    <div
+      *ngIf="searched && !loading && !error && songs.length === 0"
+      class="empty-state"
+    >
+      <h3>No hemos encontrado canciones</h3>
+
+      <p>
+        Prueba con otro título o nombre de artista.
+      </p>
+    </div>
+
+    <div *ngIf="!searched" class="welcome">
+      <span class="welcome-icon">♫</span>
+
+      <h2>Tu música empieza aquí</h2>
+
+      <p>
+        Escribe el nombre de una canción o artista
+        para comenzar a explorar.
+      </p>
+    </div>
+
   </section>
+
 </main>
