@@ -1,10 +1,15 @@
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { MusicItem, MusicSearchResponse, SearchFilter } from '../models/music.model';
+import {
+  MusicItem,
+  MusicSearchResponse,
+  SearchFilter
+} from '../models/music.model';
 
-interface TheAudioDbArtist {
+export interface TheAudioDbArtist {
   idArtist: string;
   strArtist: string;
   strArtistThumb?: string | null;
@@ -13,25 +18,49 @@ interface TheAudioDbArtist {
   strStyle?: string | null;
   intFormedYear?: string | null;
   strCountry?: string | null;
+  strBiographyEN?: string | null;
+  strWebsite?: string | null;
+  strFacebook?: string | null;
+  strTwitter?: string | null;
+  strMood?: string | null;
+  strArtistLogo?: string | null;
 }
-interface TheAudioDbAlbum {
+
+export interface TheAudioDbAlbum {
   idAlbum: string;
   strAlbum: string;
   strArtist?: string | null;
+  idArtist?: string | null;
   intYearReleased?: string | null;
   strAlbumThumb?: string | null;
+  strDescriptionEN?: string | null;
+  strGenre?: string | null;
+  intScore?: string | null;
 }
-interface TheAudioDbTrack {
+
+export interface TheAudioDbTrack {
   idTrack: string;
   strTrack: string;
   strArtist?: string | null;
   strAlbum?: string | null;
+  idAlbum?: string | null;
+  idArtist?: string | null;
   strTrackThumb?: string | null;
   intDuration?: string | null;
+  strGenre?: string | null;
+  strDescriptionEN?: string | null;
+  strMusicVid?: string | null;
 }
-interface ArtistResponse { artists?: TheAudioDbArtist[] | null; }
-interface AlbumResponse { album?: TheAudioDbAlbum[] | null; }
-interface TrackResponse { track?: TheAudioDbTrack[] | null; }
+
+interface ArtistResponse {
+  artists?: TheAudioDbArtist[] | null;
+}
+interface AlbumResponse {
+  album?: TheAudioDbAlbum[] | null;
+}
+interface TrackResponse {
+  track?: TheAudioDbTrack[] | null;
+}
 
 @Injectable({ providedIn: 'root' })
 export class MusicService {
@@ -40,6 +69,36 @@ export class MusicService {
 
   private params(key: string, value: string): HttpParams {
     return new HttpParams().set(key, value);
+  }
+
+  getArtist(id: string): Observable<TheAudioDbArtist | null> {
+    return this.http.get<ArtistResponse>(
+      `${this.baseUrl}/artist.php`,
+      { params: this.params('i', id) }
+    ).pipe(
+      map(response => response.artists?.[0] ?? null),
+      catchError(() => of(null))
+    );
+  }
+
+  getAlbum(id: string): Observable<TheAudioDbAlbum | null> {
+    return this.http.get<AlbumResponse>(
+      `${this.baseUrl}/album.php`,
+      { params: this.params('m', id) }
+    ).pipe(
+      map(response => response.album?.[0] ?? null),
+      catchError(() => of(null))
+    );
+  }
+
+  getTrack(id: string): Observable<TheAudioDbTrack | null> {
+    return this.http.get<TrackResponse>(
+      `${this.baseUrl}/track.php`,
+      { params: this.params('h', id) }
+    ).pipe(
+      map(response => response.track?.[0] ?? null),
+      catchError(() => of(null))
+    );
   }
 
   searchArtists(query: string): Observable<MusicSearchResponse> {
@@ -65,7 +124,6 @@ export class MusicService {
     );
   }
 
-  // La API gratuita permite consultar la discografía a partir del nombre del artista.
   searchAlbums(query: string): Observable<MusicSearchResponse> {
     return this.http.get<AlbumResponse>(
       `${this.baseUrl}/discography.php`,
@@ -88,7 +146,6 @@ export class MusicService {
     );
   }
 
-  // Devuelve las canciones destacadas del artista; no es una búsqueda global por título.
   searchTracks(query: string): Observable<MusicSearchResponse> {
     return this.http.get<TrackResponse>(
       `${this.baseUrl}/track-top10.php`,
@@ -101,10 +158,13 @@ export class MusicService {
           results: tracks.map(track => ({
             id: track.idTrack,
             title: track.strTrack,
-            subtitle: [track.strArtist, track.strAlbum].filter(Boolean).join(' · ') || query,
+            subtitle: [track.strArtist, track.strAlbum]
+              .filter(Boolean).join(' · ') || query,
             type: 'track' as const,
             image: track.strTrackThumb || undefined,
-            duration: track.intDuration ? Math.floor(Number(track.intDuration) / 1000) : undefined
+            duration: track.intDuration
+              ? Math.floor(Number(track.intDuration) / 1000)
+              : undefined
           }))
         };
       })
@@ -119,8 +179,6 @@ export class MusicService {
     if (filter === 'release') return this.searchAlbums(q);
     if (filter === 'track') return this.searchTracks(q);
 
-    // Para "Todo" mostramos artistas. La API gratuita no ofrece una búsqueda
-    // global gratuita de canciones y álbumes por cualquier texto.
     return this.searchArtists(q);
   }
 }

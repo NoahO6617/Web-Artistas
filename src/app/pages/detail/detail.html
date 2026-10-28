@@ -1,30 +1,94 @@
+
 <main class="detail-page">
   <a routerLink="/buscar" class="back-link">
     ← Volver al buscador
   </a>
 
-  <section class="detail-card">
-    <div class="detail-icon">♫</div>
+  <p *ngIf="loading" class="notice">
+    Cargando información musical...
+  </p>
+
+  <section *ngIf="!loading && !notFound" class="detail-card">
+    <div class="detail-cover" *ngIf="image; else musicPlaceholder">
+      <img [src]="image" [alt]="title" />
+    </div>
+
+    <ng-template #musicPlaceholder>
+      <div class="detail-icon">♫</div>
+    </ng-template>
 
     <p class="eyebrow">{{ typeLabel }}</p>
 
-    <h1>Detalle musical</h1>
+    <h1>{{ title }}</h1>
 
+    <p class="subtitle" *ngIf="subtitle">
+      {{ subtitle }}
+    </p>
+
+    <div class="metadata" *ngIf="artist">
+      <p *ngIf="artist.intFormedYear">
+        <strong>Año de formación:</strong> {{ artist.intFormedYear }}
+      </p>
+      <p *ngIf="artist.strMood">
+        <strong>Estilo:</strong> {{ artist.strMood }}
+      </p>
+      <p *ngIf="artist.strWebsite">
+        <strong>Web oficial:</strong>
+        <a
+          [href]="artist.strWebsite.startsWith('http') ? artist.strWebsite : 'https://' + artist.strWebsite"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ artist.strWebsite }}
+        </a>
+      </p>
+    </div>
+
+    <div class="metadata" *ngIf="album">
+      <p *ngIf="album.intYearReleased">
+        <strong>Año:</strong> {{ album.intYearReleased }}
+      </p>
+      <p *ngIf="album.strGenre">
+        <strong>Género:</strong> {{ album.strGenre }}
+      </p>
+    </div>
+
+    <div class="metadata" *ngIf="track">
+      <p *ngIf="duration">
+        <strong>Duración:</strong> {{ duration }}
+      </p>
+      <p *ngIf="track.strGenre">
+        <strong>Género:</strong> {{ track.strGenre }}
+      </p>
+      <p *ngIf="track.strMusicVid">
+        <a
+          [href]="track.strMusicVid"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="button"
+        >
+          Ver videoclip
+        </a>
+      </p>
+    </div>
+
+    <section class="biography" *ngIf="biography">
+      <h2>{{ artist ? 'Biografía' : 'Información' }}</h2>
+      <p>{{ biography }}</p>
+    </section>
+
+    <p *ngIf="!biography" class="notice">
+      No hay una biografía o descripción disponible para este elemento.
+    </p>
+  </section>
+
+  <section *ngIf="!loading && notFound" class="detail-card">
+    <div class="detail-icon">♫</div>
+    <h1>Información no disponible</h1>
     <p>
-      Has seleccionado un elemento del catálogo musical.
+      No hemos encontrado los detalles de este elemento.
+      Puede que TheAudioDB no tenga información para este identificador.
     </p>
-
-    <p class="identifier">
-      Tipo: {{ type }} · Identificador: {{ id }}
-    </p>
-
-    <p class="notice">
-      La información detallada estará disponible cuando
-      conectemos esta vista al endpoint correspondiente.
-    </p>
-
-    <a routerLink="/buscar" class="button">
-      Volver a buscar
-    </a>
+    <a routerLink="/buscar" class="button">Volver a buscar</a>
   </section>
 </main>
