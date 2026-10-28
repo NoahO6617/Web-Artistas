@@ -1,10 +1,6 @@
 export const environment = {
   production: false,
-
-  musicApi: {
-    baseUrl: 'https://api.7digital.com',
-    consumerKey: '',
-    country: 'ES',
-    usageTypes: 'download,subscriptionstreaming,adsupportedstreaming'
+  theAudioDb: {
+    baseUrl: 'https://www.theaudiodb.com/api/v1/json/123'
   }
 };

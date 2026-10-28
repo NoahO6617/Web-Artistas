@@ -6,7 +6,7 @@ export interface MusicItem {
   title: string;
   subtitle: string;
   type: MusicType;
-  image?: string;
+  image?: string | null;
   year?: number;
   duration?: number;
 }

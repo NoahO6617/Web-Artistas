@@ -1,186 +1,126 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, forkJoin, map, of } from 'rxjs';
-
+import { Observable, catchError, map, of, switchMap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import {
-  MusicItem,
-  MusicSearchResponse,
-  SearchFilter
-} from '../models/music.model';
+import { MusicItem, MusicSearchResponse, SearchFilter } from '../models/music.model';
 
-interface ApiResponse<T> {
-  results?: T[];
-  estimatedTotalItems?: number;
+interface TheAudioDbArtist {
+  idArtist: string;
+  strArtist: string;
+  strArtistThumb?: string | null;
+  strArtistFanart?: string | null;
+  strGenre?: string | null;
+  strStyle?: string | null;
+  intFormedYear?: string | null;
+  strCountry?: string | null;
 }
-
-interface ApiArtist {
-  id: number;
-  name: string;
+interface TheAudioDbAlbum {
+  idAlbum: string;
+  strAlbum: string;
+  strArtist?: string | null;
+  intYearReleased?: string | null;
+  strAlbumThumb?: string | null;
 }
-
-interface ApiTrack {
-  id: number;
-  title: string;
-  duration?: number;
-  artist?: ApiArtist;
-  release?: { id: number; title: string };
+interface TheAudioDbTrack {
+  idTrack: string;
+  strTrack: string;
+  strArtist?: string | null;
+  strAlbum?: string | null;
+  strTrackThumb?: string | null;
+  intDuration?: string | null;
 }
-
-interface ApiRelease {
-  id: number;
-  title: string;
-  year?: number;
-  type?: string;
-  image?: string;
-  artist?: ApiArtist;
-}
+interface ArtistResponse { artists?: TheAudioDbArtist[] | null; }
+interface AlbumResponse { album?: TheAudioDbAlbum[] | null; }
+interface TrackResponse { track?: TheAudioDbTrack[] | null; }
 
 @Injectable({ providedIn: 'root' })
 export class MusicService {
   private readonly http = inject(HttpClient);
-  private readonly config = environment.musicApi;
-  private readonly baseUrl = this.config.baseUrl;
+  private readonly baseUrl = environment.theAudioDb.baseUrl;
 
-  private params(query: string, usage = false): HttpParams {
-    let params = new HttpParams()
-      .set('q', query)
-      .set('country', this.config.country)
-      .set('page', '1')
-      .set('pageSize', '12');
-
-    if (this.config.consumerKey) {
-      params = params.set(
-        'oauth_consumer_key',
-        this.config.consumerKey
-      );
-    }
-
-    if (usage) {
-      params = params.set('usageTypes', this.config.usageTypes);
-    }
-
-    return params;
+  private params(key: string, value: string): HttpParams {
+    return new HttpParams().set(key, value);
   }
-
-
-searchTracks(query: string): Observable<MusicSearchResponse> {
-  const token =
-    typeof localStorage !== 'undefined'
-      ? localStorage.getItem('spotify_access_token')
-      : null;
-
-  if (!token) {
-    return of({ results: [], total: 0 });
-  }
-
-  const params = new HttpParams()
-    .set('q', query)
-    .set('type', 'track')
-    .set('limit', '12')
-    .set('market', 'ES');
-
-  return this.http.get<any>(
-    'https://api.spotify.com/v1/search',
-    {
-      params,
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  ).pipe(
-    map(response => {
-      const tracks = response.tracks?.items ?? [];
-
-      return {
-        total: response.tracks?.total ?? tracks.length,
-        results: tracks.map((track: any) => ({
-          id: track.id,
-          title: track.name,
-          subtitle: track.artists
-            .map((artist: any) => artist.name)
-            .join(', '),
-          type: 'track' as const,
-          image: track.album?.images?.[0]?.url,
-          duration: Math.floor(track.duration_ms / 1000)
-        }))
-      };
-    })
-  );
-}
-
 
   searchArtists(query: string): Observable<MusicSearchResponse> {
-    return this.http.get<ApiResponse<ApiArtist>>(
-      `${this.baseUrl}/artist/search`,
-      { params: this.params(query) }
+    return this.http.get<ArtistResponse>(
+      `${this.baseUrl}/search.php`,
+      { params: this.params('s', query) }
     ).pipe(
       map(response => {
-        const artists = response.results ?? [];
-
+        const artists = response.artists ?? [];
         return {
-          total: response.estimatedTotalItems ?? artists.length,
+          total: artists.length,
           results: artists.map(artist => ({
-            id: artist.id,
-            title: artist.name,
-            subtitle: 'Artista',
-            type: 'artist' as const
+            id: artist.idArtist,
+            title: artist.strArtist,
+            subtitle: [artist.strGenre || artist.strStyle, artist.strCountry]
+              .filter(Boolean).join(' · ') || 'Artista',
+            type: 'artist' as const,
+            image: artist.strArtistThumb || artist.strArtistFanart || undefined,
+            year: artist.intFormedYear ? Number(artist.intFormedYear) : undefined
           }))
         };
       })
     );
   }
 
+  // La API gratuita permite consultar la discografía a partir del nombre del artista.
   searchAlbums(query: string): Observable<MusicSearchResponse> {
-    return this.http.get<ApiResponse<ApiRelease>>(
-      `${this.baseUrl}/release/search`,
-      { params: this.params(query, true) }
+    return this.http.get<AlbumResponse>(
+      `${this.baseUrl}/discography.php`,
+      { params: this.params('s', query) }
     ).pipe(
       map(response => {
-        const releases = response.results ?? [];
-
+        const albums = response.album ?? [];
         return {
-          total: response.estimatedTotalItems ?? releases.length,
-          results: releases.map(release => ({
-            id: release.id,
-            title: release.title,
-            subtitle: release.artist?.name ?? 'Artista desconocido',
+          total: albums.length,
+          results: albums.map(album => ({
+            id: album.idAlbum,
+            title: album.strAlbum,
+            subtitle: album.strArtist || query,
             type: 'release' as const,
-            image: release.image,
-            year: release.year
+            image: album.strAlbumThumb || undefined,
+            year: album.intYearReleased ? Number(album.intYearReleased) : undefined
           }))
         };
       })
     );
   }
 
-  search(
-    query: string,
-    filter: SearchFilter
-  ): Observable<MusicSearchResponse> {
+  // Devuelve las canciones destacadas del artista; no es una búsqueda global por título.
+  searchTracks(query: string): Observable<MusicSearchResponse> {
+    return this.http.get<TrackResponse>(
+      `${this.baseUrl}/track-top10.php`,
+      { params: this.params('s', query) }
+    ).pipe(
+      map(response => {
+        const tracks = response.track ?? [];
+        return {
+          total: tracks.length,
+          results: tracks.map(track => ({
+            id: track.idTrack,
+            title: track.strTrack,
+            subtitle: [track.strArtist, track.strAlbum].filter(Boolean).join(' · ') || query,
+            type: 'track' as const,
+            image: track.strTrackThumb || undefined,
+            duration: track.intDuration ? Math.floor(Number(track.intDuration) / 1000) : undefined
+          }))
+        };
+      })
+    );
+  }
+
+  search(query: string, filter: SearchFilter): Observable<MusicSearchResponse> {
     const q = query.trim();
+    if (!q) return of({ results: [], total: 0 });
 
-    if (!q) {
-      return of({ results: [], total: 0 });
-    }
-
-    if (filter === 'track') return this.searchTracks(q);
     if (filter === 'artist') return this.searchArtists(q);
     if (filter === 'release') return this.searchAlbums(q);
+    if (filter === 'track') return this.searchTracks(q);
 
-    return forkJoin([
-      this.searchTracks(q),
-      this.searchArtists(q),
-      this.searchAlbums(q)
-    ]).pipe(
-      map(([tracks, artists, albums]) => ({
-        results: [
-          ...tracks.results,
-          ...artists.results,
-          ...albums.results
-        ],
-        total: tracks.total + artists.total + albums.total
-      }))
-    );
+    // Para "Todo" mostramos artistas. La API gratuita no ofrece una búsqueda
+    // global gratuita de canciones y álbumes por cualquier texto.
+    return this.searchArtists(q);
   }
 }

@@ -1,30 +1,29 @@
-
 <section class="search-page">
   <h1>Buscar música</h1>
 
-  <app-search-bar
-    (queryChange)="onQueryChange($event)">
-  </app-search-bar>
+  <app-search-bar (queryChange)="onQueryChange($event)"></app-search-bar>
 
-  <div class="filters">
-    <button type="button" (click)="onFilterChange('all')">Todo</button>
-    <button type="button" (click)="onFilterChange('track')">Canciones</button>
-    <button type="button" (click)="onFilterChange('artist')">Artistas</button>
-    <button type="button" (click)="onFilterChange('release')">Álbumes</button>
+  <div class="filters" aria-label="Tipo de resultado">
+    <button type="button" [class.active]="filter === 'all'" (click)="onFilterChange('all')">Artistas</button>
+    <button type="button" [class.active]="filter === 'release'" (click)="onFilterChange('release')">Álbumes del artista</button>
+    <button type="button" [class.active]="filter === 'track'" (click)="onFilterChange('track')">Top canciones del artista</button>
   </div>
 
-  <p *ngIf="loading">Buscando...</p>
-  <p *ngIf="error">{{ error }}</p>
+  <p class="hint" *ngIf="query && filter === 'release'">
+    Introduce el nombre de un artista para consultar su discografía.
+  </p>
+  <p class="hint" *ngIf="query && filter === 'track'">
+    Introduce el nombre de un artista para consultar sus canciones destacadas.
+  </p>
+
+  <p *ngIf="loading" class="message">Buscando...</p>
+  <p *ngIf="error" class="error">{{ error }}</p>
 
   <div class="music-grid" *ngIf="!loading && items.length > 0">
-    <app-music-card
-      *ngFor="let item of items"
-      [item]="item">
-    </app-music-card>
+    <app-music-card *ngFor="let item of items" [item]="item"></app-music-card>
   </div>
 
-  <p *ngIf="!loading && query && !error && items.length === 0">
-    No se han encontrado resultados.
+  <p *ngIf="!loading && query && !error && items.length === 0" class="empty-state">
+    No se han encontrado resultados. Comprueba el nombre o prueba con otro artista.
   </p>
 </section>
-
