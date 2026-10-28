@@ -1,48 +1,35 @@
 <main class="home">
-
   <section class="hero">
-
     <p class="eyebrow">TU UNIVERSO MUSICAL</p>
 
-    <h1>
-      Encuentra tu<br>
-      próxima canción.
-    </h1>
+    <h1>Encuentra tu<br>próximo artista.</h1>
 
     <p class="description">
-      Busca canciones, descubre nuevos artistas
-      y explora el mundo de la música.
+      Explora artistas, descubre álbumes y conoce mejor la música que te gusta.
     </p>
-    
 
-    <form class="search-bar" (ngSubmit)="searchSongs()">
-
-      <span class="search-icon">⌕</span>
+    <form class="search-bar" (ngSubmit)="search()">
+      <span class="search-icon" aria-hidden="true">⌕</span>
 
       <input
         type="search"
         name="query"
         [(ngModel)]="query"
-        placeholder="¿Qué canción estás buscando?"
-        aria-label="Buscar canciones"
+        placeholder="Busca un artista, por ejemplo Coldplay..."
+        aria-label="Buscar artistas"
       >
 
       <button type="submit" [disabled]="loading">
         {{ loading ? 'Buscando...' : 'Buscar' }}
       </button>
-
     </form>
-
   </section>
 
-  <section class="results">
-
-    <h2 *ngIf="searched">
-      Resultados de búsqueda
-    </h2>
+  <section class="results" aria-live="polite">
+    <h2 *ngIf="searched">Resultados de artistas</h2>
 
     <p *ngIf="loading" class="message">
-      Buscando canciones...
+      Buscando artistas...
     </p>
 
     <p *ngIf="error" class="error">
@@ -51,38 +38,30 @@
 
     <div
       class="music-grid"
-      *ngIf="!loading && songs.length > 0"
+      *ngIf="!loading && artists.length > 0"
     >
-
       <app-music-card
-        *ngFor="let song of songs"
-        [item]="song">
+        *ngFor="let artist of artists"
+        [item]="artist">
       </app-music-card>
-
     </div>
 
     <div
-      *ngIf="searched && !loading && !error && songs.length === 0"
+      *ngIf="searched && !loading && !error && artists.length === 0"
       class="empty-state"
     >
-      <h3>No hemos encontrado canciones</h3>
-
+      <h3>No hemos encontrado artistas</h3>
       <p>
-        Prueba con otro título o nombre de artista.
+        Prueba con otro nombre. La API gratuita puede tener resultados limitados.
       </p>
     </div>
 
     <div *ngIf="!searched" class="welcome">
       <span class="welcome-icon">♫</span>
-
       <h2>Tu música empieza aquí</h2>
-
       <p>
-        Escribe el nombre de una canción o artista
-        para comenzar a explorar.
+        Busca un artista para descubrir su información y explorar su discografía.
       </p>
     </div>
-
   </section>
-
 </main>

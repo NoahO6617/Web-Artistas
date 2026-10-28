@@ -14,11 +14,11 @@ import { MusicItem } from '../../models/music.model';
   styleUrl: './home.css'
 })
 export class Home {
-  query = '';
-  artists: MusicItem[] = [];
-  loading = false;
-  searched = false;
-  error = '';
+query = '';
+artists: MusicItem[] = [];
+loading = false;
+searched = false;
+error = '';
 
   constructor(
     private readonly musicService: MusicService,
