@@ -25,6 +25,7 @@ import { SpotifyAuthService } from '../../services/spotify-auth.service';
     }
   `]
 })
+//Parte hecho con Ia
 export class Callback implements OnInit {
   message = 'Procesando autorización...';
 
