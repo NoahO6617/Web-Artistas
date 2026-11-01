@@ -1,4 +1,5 @@
 
+<!-- Ficha de detalle para artistas, álbumes y canciones. -->
 <main class="detail-page">
   <a routerLink="/buscar" class="back-link">← Volver al buscador</a>
 
@@ -108,27 +109,29 @@
       TheAudioDB no tiene una descripción disponible para este elemento.
     </p>
 
+    <!-- Contenido relacionado con el artista. -->
     <section class="related-section" *ngIf="artist">
       <h2>Álbumes</h2>
       <p *ngIf="relatedLoading && artistAlbums.length === 0" class="notice">Cargando álbumes...</p>
       <div class="related-grid" *ngIf="artistAlbums.length">
-        <app-music-card *ngFor="let item of artistAlbums" [item]="item"></app-music-card>
+        <app-music-card *ngFor="let item of artistAlbums" [item]="item" (itemSelected)="openItem($event)"></app-music-card>
       </div>
       <p *ngIf="!relatedLoading && artistAlbums.length === 0" class="notice">No hay álbumes disponibles para este artista.</p>
 
       <h2 class="related-heading">Canciones destacadas</h2>
       <p *ngIf="relatedLoading && artistTracks.length === 0" class="notice">Cargando canciones...</p>
       <div class="related-grid" *ngIf="artistTracks.length">
-        <app-music-card *ngFor="let item of artistTracks" [item]="item"></app-music-card>
+        <app-music-card *ngFor="let item of artistTracks" [item]="item" (itemSelected)="openItem($event)"></app-music-card>
       </div>
       <p *ngIf="!relatedLoading && artistTracks.length === 0" class="notice">No hay canciones disponibles para este artista.</p>
     </section>
 
+    <!-- Canciones incluidas en el álbum. -->
     <section class="related-section" *ngIf="album">
       <h2>Canciones del álbum</h2>
       <p *ngIf="relatedLoading && albumTracks.length === 0" class="notice">Cargando canciones...</p>
       <div class="related-grid" *ngIf="albumTracks.length">
-        <app-music-card *ngFor="let item of albumTracks" [item]="item"></app-music-card>
+        <app-music-card *ngFor="let item of albumTracks" [item]="item" (itemSelected)="openItem($event)"></app-music-card>
       </div>
       <p *ngIf="!relatedLoading && albumTracks.length === 0" class="notice">No hay canciones disponibles para este álbum.</p>
     </section>

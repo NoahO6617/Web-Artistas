@@ -1,7 +1,7 @@
 
 import { Component, DestroyRef, OnInit, ChangeDetectorRef, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize, switchMap, of, forkJoin, catchError } from 'rxjs';
 import { MusicItem } from '../../models/music.model';
@@ -24,6 +24,7 @@ import {
 export class Detail implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly musicService = inject(MusicService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -43,6 +44,7 @@ export class Detail implements OnInit {
   albumTracks: MusicItem[] = [];
   relatedLoading = false;
 
+  // Lee los parámetros de la URL y carga el elemento solicitado.
   ngOnInit(): void {
     this.route.paramMap.pipe(
       takeUntilDestroyed(this.destroyRef),
@@ -129,6 +131,7 @@ export class Detail implements OnInit {
     });
   }
 
+  // Carga álbumes y canciones para completar la ficha del artista.
   private loadArtistRelated(artistName: string): void {
     this.relatedLoading = true;
 
@@ -150,6 +153,7 @@ export class Detail implements OnInit {
     });
   }
 
+  // Recupera las canciones incluidas en el álbum seleccionado.
   private loadAlbumTracks(albumId: string): void {
     this.relatedLoading = true;
 
@@ -166,6 +170,12 @@ export class Detail implements OnInit {
     });
   }
 
+  // Abre el detalle del elemento seleccionado en una tarjeta relacionada.
+  openItem(item: MusicItem): void {
+    this.router.navigate(['/detalle', item.type, item.id]);
+  }
+
+  // Construye el enlace a la ficha del artista relacionado.
   get relatedArtistUrl(): string[] | null {
     const artistId = this.album?.idArtist || this.track?.idArtist;
     return artistId ? ['/detalle', 'artist', artistId] : null;
@@ -225,6 +235,7 @@ export class Detail implements OnInit {
     return '';
   }
 
+  // biografia que utiliza y otros campos como alternativa.
   get biography(): string | null {
   return this.artist?.strBiographyES
     || this.artist?.strBiographyEN

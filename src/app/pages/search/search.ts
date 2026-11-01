@@ -1,7 +1,7 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { MusicCard } from '../../components/music-card/music-card';
@@ -29,7 +29,8 @@ export class Search implements OnInit, OnDestroy {
 
   constructor(
     private readonly musicService: MusicService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -44,6 +45,7 @@ export class Search implements OnInit, OnDestroy {
     this.searchSubscription?.unsubscribe();
   }
 
+  // Inicia la búsqueda y cancela la petición anterior si todavía sigue activa.
   onQueryChange(query: string): void {
     this.query = query.trim();
 
@@ -76,11 +78,17 @@ export class Search implements OnInit, OnDestroy {
       });
   }
 
+  // Recibe la selección de una tarjeta y abre su ficha.
+  openItem(item: MusicItem): void {
+    this.router.navigate(['/detalle', item.type, item.id]);
+  }
+
   onFilterChange(filter: SearchFilter): void {
     this.filter = filter;
     if (this.query) this.onQueryChange(this.query);
   }
 
+  // Guarda los resultados recientes sin duplicar elementos.
   private saveHistory(items: MusicItem[]): void {
     if (typeof localStorage === 'undefined' || items.length === 0) {
       return;

@@ -9,6 +9,7 @@ import {
   SearchFilter
 } from '../models/music.model';
 
+// Estructuras principales que devuelve TheAudioDB.
 export interface TheAudioDbArtist {
   idArtist: string;
   strArtist: string;
@@ -72,11 +73,13 @@ interface LovedTrackResponse {
   loved?: TheAudioDbTrack[] | null;
 }
 
+// Servicio encargado de consultar la información musical.
 @Injectable({ providedIn: 'root' })
 export class MusicService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.theAudioDb.baseUrl;
 
+  // Método común para enviar peticiones a la API.
   private request<T>(endpoint: string, params: HttpParams): Observable<T> {
     return this.http.get<T>(`${this.baseUrl}/${endpoint}`, { params }).pipe(
       timeout(10000)
@@ -114,6 +117,7 @@ export class MusicService {
     );
   }
 
+  // Adapta los datos de artistas al formato usado por las tarjetas.
   searchArtists(query: string): Observable<MusicSearchResponse> {
     return this.request<ArtistResponse>(
       'search.php',
@@ -226,6 +230,7 @@ export class MusicService {
     );
   }
 
+  // Combina canciones de varios artistas y evita repetir resultados.
   getPopularTracks(): Observable<MusicItem[]> {
   const artists = [
     'Coldplay',
@@ -257,6 +262,7 @@ export class MusicService {
   );
 }
 
+  // Selecciona la consulta según el filtro del buscador.
   search(query: string, filter: SearchFilter): Observable<MusicSearchResponse> {
     const cleanQuery = query.trim();
 

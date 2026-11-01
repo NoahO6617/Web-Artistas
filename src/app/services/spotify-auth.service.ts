@@ -17,6 +17,7 @@ export class SpotifyAuthService {
   private readonly tokenUrl =
     'https://accounts.spotify.com/api/token';
 
+  // Genera los datos PKCE y prepara la redirección a Spotify.
   async login(): Promise<void> {
     const verifier = this.generateRandomString(64);
 
@@ -40,6 +41,7 @@ export class SpotifyAuthService {
       `${this.authorizeUrl}?${params.toString()}`;
   }
 
+  // Intercambia el código de autorización por un token de acceso.
   async exchangeCode(code: string): Promise<string> {
     const verifier = localStorage.getItem(
       'spotify_code_verifier'

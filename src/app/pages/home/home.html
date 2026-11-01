@@ -1,4 +1,5 @@
 
+<!-- Página de inicio con contenido reciente y popular. -->
 <main class="home">
   <section class="hero">
     <p class="eyebrow">MELOWAVE · TU UNIVERSO MUSICAL</p>
@@ -27,27 +28,29 @@
   </section>
 
   <section class="results" aria-live="polite">
-    <h2 *ngIf="searched">Resultados de artistas</h2>
+    @if (searched) { <h2>Resultados de artistas</h2> }
 
-    <p *ngIf="loading" class="message">Buscando artistas...</p>
-    <p *ngIf="error" class="error">{{ error }}</p>
+    @if (loading) { <p class="message">Buscando artistas...</p> }
+    @if (error) { <p class="error">{{ error }}</p> }
 
-    <div class="music-grid" *ngIf="!loading && artists.length > 0">
-      <app-music-card
-        *ngFor="let artist of artists"
-        [item]="artist">
-      </app-music-card>
-    </div>
+    @if (!loading && artists.length > 0) {
+      <div class="music-grid">
+        @for (artist of artists; track artist.id + '-' + artist.type) {
+          <app-music-card [item]="artist" (itemSelected)="openItem($event)"></app-music-card>
+        }
+      </div>
+    }
 
-    <div
-      *ngIf="searched && !loading && !error && artists.length === 0"
-      class="empty-state">
+    @if (searched && !loading && !error && artists.length === 0) {
+    <div class="empty-state">
       <h3>No hemos encontrado artistas</h3>
       <p>Prueba con otro nombre.</p>
     </div>
+    }
   </section>
 
-  <section class="home-section" *ngIf="popularTracks.length > 0">
+  @if (popularTracks.length > 0) {
+  <section class="home-section">
     <div class="section-heading">
       <div>
         <p class="eyebrow">LO QUE MÁS SUENA</p>
@@ -57,14 +60,15 @@
     </div>
 
     <div class="music-grid">
-      <app-music-card
-        *ngFor="let track of popularTracks"
-        [item]="track">
-      </app-music-card>
+      @for (track of popularTracks; track track.id + '-' + track.type) {
+        <app-music-card [item]="track" (itemSelected)="openItem($event)"></app-music-card>
+      }
     </div>
   </section>
+  } 
 
-  <section class="home-section" *ngIf="recentArtists.length > 0">
+  @if (recentArtists.length > 0) {
+  <section class="home-section">
     <div class="section-heading">
       <div>
         <p class="eyebrow">TU ACTIVIDAD</p>
@@ -73,13 +77,15 @@
     </div>
 
     <div class="music-grid recent-grid">
-      <app-music-card
-        *ngFor="let artist of recentArtists"
-        [item]="artist">
-      </app-music-card>
+      @for (artist of recentArtists; track artist.id + '-' + artist.type) {
+        <app-music-card [item]="artist" (itemSelected)="openItem($event)"></app-music-card>
+      }
     </div>
   </section>
-  <section class="home-section" *ngIf="recentTracks.length > 0">
+  }
+
+  @if (recentTracks.length > 0) {
+  <section class="home-section">
   <div class="section-heading">
     <div>
       <p class="eyebrow">TU ACTIVIDAD</p>
@@ -88,17 +94,18 @@
   </div>
 
   <div class="music-grid">
-    <app-music-card
-      *ngFor="let track of recentTracks"
-      [item]="track">
-    </app-music-card>
+    @for (track of recentTracks; track track.id + '-' + track.type) {
+      <app-music-card [item]="track" (itemSelected)="openItem($event)"></app-music-card>
+    }
   </div>
 </section>
-  <section
-  class="welcome"
-  *ngIf="!searched && popularTracks.length === 0 && recentArtists.length === 0 && recentTracks.length === 0">
+  }
+
+  @if (!searched && popularTracks.length === 0 && recentArtists.length === 0 && recentTracks.length === 0) {
+  <section class="welcome">
     <span class="welcome-icon">♫</span>
     <h2>Tu música empieza aquí</h2>
     <p>Busca un artista para descubrir su información y explorar su discografía.</p>
   </section>
+  }
 </main>
