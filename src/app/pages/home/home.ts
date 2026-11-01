@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { catchError, of } from 'rxjs';
+
 import { MusicService } from '../../services/music.service';
 import { MusicCard } from '../../components/music-card/music-card';
 import { MusicItem } from '../../models/music.model';
@@ -13,20 +16,33 @@ import { MusicItem } from '../../models/music.model';
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class Home {
-query = '';
-artists: MusicItem[] = [];
-loading = false;
-searched = false;
-error = '';
+export class Home implements OnInit {
+  query = '';
+  artists: MusicItem[] = [];
+  popularTracks: MusicItem[] = [];
+  recentArtists: MusicItem[] = [];
+  recentTracks: MusicItem[] = [];
+
+  loading = false;
+  loadingPopular = false;
+  searched = false;
+  error = '';
+
+  private readonly historyKey = 'melowave-search-history';
 
   constructor(
     private readonly musicService: MusicService,
     private readonly router: Router
   ) {}
 
+  ngOnInit(): void {
+    this.loadHistory();
+    this.loadPopularTracks();
+  }
+
   search(): void {
     const query = this.query.trim();
+
     if (!query) {
       this.artists = [];
       this.searched = false;
@@ -42,20 +58,81 @@ error = '';
       next: response => {
         this.artists = response.results;
         this.loading = false;
+
+        this.saveHistory(this.artists);
+        this.loadHistory();
       },
       error: err => {
-        console.error('Error al buscar artistas en TheAudioDB:', err);
+        console.error('Error al buscar artistas:', err);
         this.artists = [];
-        this.error = 'No se ha podido conectar con TheAudioDB. Prueba de nuevo en unos segundos.';
+        this.error = 'No se ha podido conectar con TheAudioDB. Inténtalo de nuevo.';
         this.loading = false;
       }
     });
   }
 
+  loadPopularTracks(): void {
+    this.loadingPopular = true;
+
+    this.musicService.getPopularTracks().pipe(
+      catchError(err => {
+        console.error('Error cargando canciones populares:', err);
+        return of([]);
+      })
+    ).subscribe(tracks => {
+      this.popularTracks = tracks;
+      this.loadingPopular = false;
+    });
+  }
+
+  private saveHistory(items: MusicItem[]): void {
+    if (typeof localStorage === 'undefined') return;
+
+    const previous = this.readHistory();
+    const combined = [...items, ...previous];
+
+    const unique = combined.filter((item, index, array) =>
+      array.findIndex(other =>
+        other.id === item.id && other.type === item.type
+      ) === index
+    );
+
+    localStorage.setItem(
+      this.historyKey,
+      JSON.stringify(unique.slice(0, 8))
+    );
+  }
+
+  private readHistory(): MusicItem[] {
+    if (typeof localStorage === 'undefined') return [];
+
+    try {
+      const stored = localStorage.getItem(this.historyKey);
+      return stored ? JSON.parse(stored) as MusicItem[] : [];
+    } catch {
+      return [];
+    }
+  }
+
+ loadHistory(): void {
+  const history = this.readHistory();
+
+  this.recentArtists = history
+    .filter(item => item.type === 'artist')
+    .slice(0, 6);
+
+  this.recentTracks = history
+    .filter(item => item.type === 'track')
+    .slice(0, 6);
+}
+
   openFullSearch(): void {
     const query = this.query.trim();
+
     if (query) {
-      this.router.navigate(['/buscar'], { queryParams: { q: query } });
+      this.router.navigate(['/buscar'], {
+        queryParams: { q: query }
+      });
     }
   }
 }

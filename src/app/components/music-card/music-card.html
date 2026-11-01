@@ -1,7 +1,4 @@
-<a
-  class="music-card"
-  [routerLink]="['/detalle', item.type, item.id]"
->
+<a class="music-card" [routerLink]="detailUrl">
   <div class="cover">
     <img
       *ngIf="item.image; else placeholder"

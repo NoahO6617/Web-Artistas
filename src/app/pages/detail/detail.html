@@ -1,15 +1,14 @@
 
 <main class="detail-page">
-  <a routerLink="/buscar" class="back-link">
-    ← Volver al buscador
-  </a>
+  <a routerLink="/buscar" class="back-link">← Volver al buscador</a>
 
-  <p *ngIf="loading" class="notice">
-    Cargando información musical...
-  </p>
-
-  <section *ngIf="!loading && !notFound" class="detail-card">
-    <div class="detail-cover" *ngIf="image; else musicPlaceholder">
+<p *ngIf="loading" class="message">
+  Cargando información del artista...
+</p>
+<section
+  *ngIf="artist || album || track"
+  class="detail-card"
+>    <div class="detail-cover" *ngIf="image; else musicPlaceholder">
       <img [src]="image" [alt]="title" />
     </div>
 
@@ -18,16 +17,19 @@
     </ng-template>
 
     <p class="eyebrow">{{ typeLabel }}</p>
-
     <h1>{{ title }}</h1>
 
-    <p class="subtitle" *ngIf="subtitle">
-      {{ subtitle }}
-    </p>
+    <p class="subtitle" *ngIf="subtitle">{{ subtitle }}</p>
 
     <div class="metadata" *ngIf="artist">
       <p *ngIf="artist.intFormedYear">
         <strong>Año de formación:</strong> {{ artist.intFormedYear }}
+      </p>
+      <p *ngIf="artist.strCountry">
+        <strong>País:</strong> {{ artist.strCountry }}
+      </p>
+      <p *ngIf="artist.strGenre || artist.strStyle">
+        <strong>Género:</strong> {{ artist.strGenre || artist.strStyle }}
       </p>
       <p *ngIf="artist.strMood">
         <strong>Estilo:</strong> {{ artist.strMood }}
@@ -37,9 +39,20 @@
         <a
           [href]="artist.strWebsite.startsWith('http') ? artist.strWebsite : 'https://' + artist.strWebsite"
           target="_blank"
-          rel="noopener noreferrer"
-        >
+          rel="noopener noreferrer">
           {{ artist.strWebsite }}
+        </a>
+      </p>
+      <p *ngIf="artist.strFacebook">
+        <strong>Facebook:</strong>
+        <a [href]="artist.strFacebook" target="_blank" rel="noopener noreferrer">
+          Visitar perfil
+        </a>
+      </p>
+      <p *ngIf="artist.strTwitter">
+        <strong>Twitter:</strong>
+        <a [href]="artist.strTwitter" target="_blank" rel="noopener noreferrer">
+          Visitar perfil
         </a>
       </p>
     </div>
@@ -51,6 +64,11 @@
       <p *ngIf="album.strGenre">
         <strong>Género:</strong> {{ album.strGenre }}
       </p>
+      <p *ngIf="album.strArtist">
+        <strong>Artista:</strong>
+        <a *ngIf="relatedArtistUrl; else albumArtistText" [routerLink]="relatedArtistUrl">{{ album.strArtist }}</a>
+        <ng-template #albumArtistText>{{ album.strArtist }}</ng-template>
+      </p>
     </div>
 
     <div class="metadata" *ngIf="track">
@@ -60,13 +78,22 @@
       <p *ngIf="track.strGenre">
         <strong>Género:</strong> {{ track.strGenre }}
       </p>
+      <p *ngIf="track.strArtist">
+        <strong>Artista:</strong>
+        <a *ngIf="relatedArtistUrl; else trackArtistText" [routerLink]="relatedArtistUrl">{{ track.strArtist }}</a>
+        <ng-template #trackArtistText>{{ track.strArtist }}</ng-template>
+      </p>
+      <p *ngIf="track.strAlbum">
+        <strong>Álbum:</strong>
+        <a *ngIf="relatedAlbumUrl; else trackAlbumText" [routerLink]="relatedAlbumUrl">{{ track.strAlbum }}</a>
+        <ng-template #trackAlbumText>{{ track.strAlbum }}</ng-template>
+      </p>
       <p *ngIf="track.strMusicVid">
         <a
           [href]="track.strMusicVid"
           target="_blank"
           rel="noopener noreferrer"
-          class="button"
-        >
+          class="button">
           Ver videoclip
         </a>
       </p>
@@ -78,16 +105,40 @@
     </section>
 
     <p *ngIf="!biography" class="notice">
-      No hay una biografía o descripción disponible para este elemento.
+      TheAudioDB no tiene una descripción disponible para este elemento.
     </p>
+
+    <section class="related-section" *ngIf="artist">
+      <h2>Álbumes</h2>
+      <p *ngIf="relatedLoading && artistAlbums.length === 0" class="notice">Cargando álbumes...</p>
+      <div class="related-grid" *ngIf="artistAlbums.length">
+        <app-music-card *ngFor="let item of artistAlbums" [item]="item"></app-music-card>
+      </div>
+      <p *ngIf="!relatedLoading && artistAlbums.length === 0" class="notice">No hay álbumes disponibles para este artista.</p>
+
+      <h2 class="related-heading">Canciones destacadas</h2>
+      <p *ngIf="relatedLoading && artistTracks.length === 0" class="notice">Cargando canciones...</p>
+      <div class="related-grid" *ngIf="artistTracks.length">
+        <app-music-card *ngFor="let item of artistTracks" [item]="item"></app-music-card>
+      </div>
+      <p *ngIf="!relatedLoading && artistTracks.length === 0" class="notice">No hay canciones disponibles para este artista.</p>
+    </section>
+
+    <section class="related-section" *ngIf="album">
+      <h2>Canciones del álbum</h2>
+      <p *ngIf="relatedLoading && albumTracks.length === 0" class="notice">Cargando canciones...</p>
+      <div class="related-grid" *ngIf="albumTracks.length">
+        <app-music-card *ngFor="let item of albumTracks" [item]="item"></app-music-card>
+      </div>
+      <p *ngIf="!relatedLoading && albumTracks.length === 0" class="notice">No hay canciones disponibles para este álbum.</p>
+    </section>
   </section>
 
   <section *ngIf="!loading && notFound" class="detail-card">
     <div class="detail-icon">♫</div>
     <h1>Información no disponible</h1>
     <p>
-      No hemos encontrado los detalles de este elemento.
-      Puede que TheAudioDB no tenga información para este identificador.
+      {{ error || 'No hemos encontrado información para este elemento.' }}
     </p>
     <a routerLink="/buscar" class="button">Volver a buscar</a>
   </section>
