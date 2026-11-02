@@ -119,19 +119,31 @@
   line-height: 1.7;
 }
 
+
 .button {
   display: inline-block;
-  padding: 12px 18px;
+  padding: 12px 22px;
   border-radius: 10px;
-  background: #9ee7dc;
-  color: #142326;
+  background: linear-gradient(135deg, #51416f, #71559a);
+  color: #ffffff;
+  border: 1px solid #8068a5;
   text-decoration: none;
   font-weight: 800;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
 .button:hover {
-  background: #c1fff4;
+  background: linear-gradient(135deg, #66518a, #896bb3);
+  border-color: #9ee7dc;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(113, 85, 154, 0.3);
 }
+
+.button:active {
+  transform: translateY(0);
+}
+
 
 @media (max-width: 600px) {
   .detail-page {
