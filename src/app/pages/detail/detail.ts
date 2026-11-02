@@ -43,6 +43,11 @@ export class Detail implements OnInit {
   artistTracks: MusicItem[] = [];
   albumTracks: MusicItem[] = [];
   relatedLoading = false;
+  expandedBiography = false;
+
+  toggleBiography(): void {
+    this.expandedBiography = !this.expandedBiography;
+  }
 
   ngOnInit(): void {
     this.route.paramMap.pipe(

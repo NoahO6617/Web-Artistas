@@ -144,6 +144,28 @@
   transform: translateY(0);
 }
 
+.biography p.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.read-more {
+  background: none;
+  border: none;
+  color: #a855f7;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: color 0.2s ease;
+}
+
+.read-more:hover {
+  color: #c084fc;
+}
+
 
 @media (max-width: 600px) {
   .detail-page {

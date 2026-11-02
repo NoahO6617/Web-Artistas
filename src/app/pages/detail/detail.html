@@ -150,7 +150,16 @@
       @if (biography) {
         <section class="biography">
           <h2>{{ artist ? 'Biografía' : 'Información' }}</h2>
-          <p>{{ biography }}</p>
+
+          <p [class.collapsed]="!expandedBiography">
+            {{ biography }}
+          </p>
+
+          @if (biography.length > 250) {
+            <button class="read-more" (click)="toggleBiography()">
+              {{ expandedBiography ? 'Ver menos' : 'Ver más' }}
+            </button>
+          }
         </section>
       } @else {
         <p class="notice">
