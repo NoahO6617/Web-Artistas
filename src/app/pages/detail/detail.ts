@@ -44,7 +44,6 @@ export class Detail implements OnInit {
   albumTracks: MusicItem[] = [];
   relatedLoading = false;
 
-  // Lee los parámetros de la URL y carga el elemento solicitado.
   ngOnInit(): void {
     this.route.paramMap.pipe(
       takeUntilDestroyed(this.destroyRef),
@@ -115,7 +114,7 @@ export class Detail implements OnInit {
 
   this.cdr.detectChanges();
 
-  // Una vez cargada la ficha principal, recuperamos sus elementos relacionados.
+
   if (this.artist?.strArtist) {
     this.loadArtistRelated(this.artist.strArtist);
   } else if (this.album?.idAlbum) {
@@ -131,7 +130,7 @@ export class Detail implements OnInit {
     });
   }
 
-  // Carga álbumes y canciones para completar la ficha del artista.
+  // Carga álbumes y canciones
   private loadArtistRelated(artistName: string): void {
     this.relatedLoading = true;
 
@@ -152,8 +151,6 @@ export class Detail implements OnInit {
       }
     });
   }
-
-  // Recupera las canciones incluidas en el álbum seleccionado.
   private loadAlbumTracks(albumId: string): void {
     this.relatedLoading = true;
 
@@ -170,12 +167,11 @@ export class Detail implements OnInit {
     });
   }
 
-  // Abre el detalle del elemento seleccionado en una tarjeta relacionada.
+  //Detalle
   openItem(item: MusicItem): void {
     this.router.navigate(['/detalle', item.type, item.id]);
   }
 
-  // Construye el enlace a la ficha del artista relacionado.
   get relatedArtistUrl(): string[] | null {
     const artistId = this.album?.idArtist || this.track?.idArtist;
     return artistId ? ['/detalle', 'artist', artistId] : null;
@@ -235,7 +231,6 @@ export class Detail implements OnInit {
     return '';
   }
 
-  // biografia que utiliza y otros campos como alternativa.
   get biography(): string | null {
   return this.artist?.strBiographyES
     || this.artist?.strBiographyEN

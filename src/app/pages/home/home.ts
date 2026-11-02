@@ -40,7 +40,7 @@ export class Home implements OnInit {
     this.loadPopularTracks();
   }
 
-  // Gestiona la selección de una tarjeta desde la página principal.
+  // Tarjetas
   openItem(item: MusicItem): void {
     this.router.navigate(['/detalle', item.type, item.id]);
   }
@@ -76,7 +76,7 @@ export class Home implements OnInit {
     });
   }
 
-  // Carga una selección de canciones para la página de inicio.
+  // Selecion de canciones para el inicio
   loadPopularTracks(): void {
     this.loadingPopular = true;
 

@@ -9,7 +9,7 @@ import {
   SearchFilter
 } from '../models/music.model';
 
-// Estructuras principales que devuelve TheAudioDB.
+// Informacion de TheAudioDB
 export interface TheAudioDbArtist {
   idArtist: string;
   strArtist: string;
@@ -73,13 +73,13 @@ interface LovedTrackResponse {
   loved?: TheAudioDbTrack[] | null;
 }
 
-// Servicio encargado de consultar la información musical.
+// Llamada a la Api
 @Injectable({ providedIn: 'root' })
 export class MusicService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.theAudioDb.baseUrl;
 
-  // Método común para enviar peticiones a la API.
+  //Peticiones a la API.
   private request<T>(endpoint: string, params: HttpParams): Observable<T> {
     return this.http.get<T>(`${this.baseUrl}/${endpoint}`, { params }).pipe(
       timeout(10000)
@@ -117,7 +117,6 @@ export class MusicService {
     );
   }
 
-  // Adapta los datos de artistas al formato usado por las tarjetas.
   searchArtists(query: string): Observable<MusicSearchResponse> {
     return this.request<ArtistResponse>(
       'search.php',
@@ -199,21 +198,21 @@ export class MusicService {
     );
   }
 
-  /** Álbumes publicados por un artista. */
+  // Álbumes publicados por un artista
   getArtistAlbums(artistName: string): Observable<MusicItem[]> {
     return this.searchAlbums(artistName).pipe(
       map(response => response.results)
     );
   }
 
-  /** Canciones destacadas de un artista (endpoint gratuito de TheAudioDB). */
+  // Canciones destacadas de un artista
   getArtistTracks(artistName: string): Observable<MusicItem[]> {
     return this.searchTracks(artistName).pipe(
       map(response => response.results)
     );
   }
 
-  /** Canciones que pertenecen a un álbum concreto. */
+  // Canciones que pertenecen a un álbum concreto
   getAlbumTracks(albumId: string): Observable<MusicItem[]> {
     return this.request<TrackResponse>(
       'track.php',
@@ -230,7 +229,7 @@ export class MusicService {
     );
   }
 
-  // Combina canciones de varios artistas y evita repetir resultados.
+  // Combina canciones de varios artistas y evita repetir resultados
   getPopularTracks(): Observable<MusicItem[]> {
   const artists = [
     'Coldplay',
@@ -262,7 +261,7 @@ export class MusicService {
   );
 }
 
-  // Selecciona la consulta según el filtro del buscador.
+  // Selecciona la consulta según el filtro del buscador
   search(query: string, filter: SearchFilter): Observable<MusicSearchResponse> {
     const cleanQuery = query.trim();
 

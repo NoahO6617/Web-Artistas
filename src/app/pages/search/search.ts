@@ -45,7 +45,7 @@ export class Search implements OnInit, OnDestroy {
     this.searchSubscription?.unsubscribe();
   }
 
-  // Inicia la búsqueda y cancela la petición anterior si todavía sigue activa.
+  // Inicia la búsqueda y cancela la petición anterior si todavía sigue activa
   onQueryChange(query: string): void {
     this.query = query.trim();
 
@@ -78,7 +78,7 @@ export class Search implements OnInit, OnDestroy {
       });
   }
 
-  // Recibe la selección de una tarjeta y abre su ficha.
+  // Recibe la selección de una tarjeta y abre su ficha
   openItem(item: MusicItem): void {
     this.router.navigate(['/detalle', item.type, item.id]);
   }
@@ -88,7 +88,7 @@ export class Search implements OnInit, OnDestroy {
     if (this.query) this.onQueryChange(this.query);
   }
 
-  // Guarda los resultados recientes sin duplicar elementos.
+  // Guarda los resultados recientes sin duplicar elementos
   private saveHistory(items: MusicItem[]): void {
     if (typeof localStorage === 'undefined' || items.length === 0) {
       return;

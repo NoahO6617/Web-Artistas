@@ -1,5 +1,4 @@
 
-<!-- Ficha de detalle para artistas, álbumes y canciones. -->
 <main class="detail-page">
   <a routerLink="/buscar" class="back-link">← Volver al buscador</a>
 
@@ -106,10 +105,10 @@
     </section>
 
     <p *ngIf="!biography" class="notice">
-      TheAudioDB no tiene una descripción disponible para este elemento.
+     no hay una descripcion para esta cancion.
     </p>
 
-    <!-- Contenido relacionado con el artista. -->
+
     <section class="related-section" *ngIf="artist">
       <h2>Álbumes</h2>
       <p *ngIf="relatedLoading && artistAlbums.length === 0" class="notice">Cargando álbumes...</p>
@@ -126,7 +125,6 @@
       <p *ngIf="!relatedLoading && artistTracks.length === 0" class="notice">No hay canciones disponibles para este artista.</p>
     </section>
 
-    <!-- Canciones incluidas en el álbum. -->
     <section class="related-section" *ngIf="album">
       <h2>Canciones del álbum</h2>
       <p *ngIf="relatedLoading && albumTracks.length === 0" class="notice">Cargando canciones...</p>
