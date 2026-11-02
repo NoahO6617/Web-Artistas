@@ -1,5 +1,14 @@
+@if (item().type === 'release') {
+  <div class="music-card static-card">
+    <ng-container *ngTemplateOutlet="cardContent"></ng-container>
+  </div>
+} @else {
+  <a class="music-card" href="#" (click)="selectItem($event)">
+    <ng-container *ngTemplateOutlet="cardContent"></ng-container>
+  </a>
+}
 
-<a class="music-card" href="#" (click)="selectItem($event)">
+<ng-template #cardContent>
   <div class="cover">
     @if (item().image) {
       <img
@@ -9,9 +18,9 @@
       />
     } @else {
       <div class="placeholder">
-        @if (item().type === 'track') { <span>♫</span> }
-        @if (item().type === 'artist') { <span>♙</span> }
-        @if (item().type === 'release') { <span>▤</span> }
+        @if (item().type === 'track') { <span></span> }
+        @if (item().type === 'artist') { <span></span> }
+        @if (item().type === 'release') { <span></span> }
       </div>
     }
   </div>
@@ -24,4 +33,4 @@
       <p class="year">{{ item().year }}</p>
     }
   </div>
-</a>
+</ng-template>

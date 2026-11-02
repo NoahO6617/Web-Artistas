@@ -1,146 +1,207 @@
-
 <main class="detail-page">
   <a routerLink="/buscar" class="back-link">← Volver al buscador</a>
 
-<p *ngIf="loading" class="message">
-  Cargando información del artista...
-</p>
-<section
-  *ngIf="artist || album || track"
-  class="detail-card"
->    <div class="detail-cover" *ngIf="image; else musicPlaceholder">
-      <img [src]="image" [alt]="title" />
-    </div>
+  @if (loading) {
+    <p class="message">
+      Cargando información del artista...
+    </p>
+  }
 
-    <ng-template #musicPlaceholder>
+  @if (artist || album || track) {
+    <section class="detail-card">
+      @if (image) {
+        <div class="detail-cover">
+          <img [src]="image" [alt]="title" />
+        </div>
+      } @else {
+        <div class="detail-icon">♫</div>
+      }
+
+      <p class="eyebrow">{{ typeLabel }}</p>
+      <h1>{{ title }}</h1>
+
+      @if (subtitle) {
+        <p class="subtitle">{{ subtitle }}</p>
+      }
+
+      @if (artist) {
+        <div class="metadata">
+          @if (artist.intFormedYear) {
+            <p>
+              <strong>Año de formación:</strong> {{ artist.intFormedYear }}
+            </p>
+          }
+          @if (artist.strCountry) {
+            <p>
+              <strong>País:</strong> {{ artist.strCountry }}
+            </p>
+          }
+          @if (artist.strGenre || artist.strStyle) {
+            <p>
+              <strong>Género:</strong> {{ artist.strGenre || artist.strStyle }}
+            </p>
+          }
+          @if (artist.strMood) {
+            <p>
+              <strong>Estilo:</strong> {{ artist.strMood }}
+            </p>
+          }
+          @if (artist.strWebsite) {
+            <p>
+              <strong>Web oficial:</strong>
+              <a
+                [href]="artist.strWebsite.startsWith('http') ? artist.strWebsite : 'https://' + artist.strWebsite"
+                target="_blank"
+                rel="noopener noreferrer">
+                {{ artist.strWebsite }}
+              </a>
+            </p>
+          }
+          @if (artist.strFacebook) {
+            <p>
+              <strong>Facebook:</strong>
+              <a [href]="artist.strFacebook" target="_blank" rel="noopener noreferrer">
+                Visitar perfil
+              </a>
+            </p>
+          }
+          @if (artist.strTwitter) {
+            <p>
+              <strong>Twitter:</strong>
+              <a [href]="artist.strTwitter" target="_blank" rel="noopener noreferrer">
+                Visitar perfil
+              </a>
+            </p>
+          }
+        </div>
+      }
+
+      @if (album) {
+        <div class="metadata">
+          @if (album.intYearReleased) {
+            <p>
+              <strong>Año:</strong> {{ album.intYearReleased }}
+            </p>
+          }
+          @if (album.strGenre) {
+            <p>
+              <strong>Género:</strong> {{ album.strGenre }}
+            </p>
+          }
+          @if (album.strArtist) {
+            <p>
+              <strong>Artista:</strong>
+              @if (relatedArtistUrl) {
+                <a [routerLink]="relatedArtistUrl">{{ album.strArtist }}</a>
+              } @else {
+                {{ album.strArtist }}
+              }
+            </p>
+          }
+        </div>
+      }
+
+      @if (track) {
+        <div class="metadata">
+          @if (duration) {
+            <p>
+              <strong>Duración:</strong> {{ duration }}
+            </p>
+          }
+          @if (track.strGenre) {
+            <p>
+              <strong>Género:</strong> {{ track.strGenre }}
+            </p>
+          }
+          @if (track.strArtist) {
+            <p>
+              <strong>Artista:</strong>
+              @if (relatedArtistUrl) {
+                <a [routerLink]="relatedArtistUrl">{{ track.strArtist }}</a>
+              } @else {
+                {{ track.strArtist }}
+              }
+            </p>
+          }
+          @if (track.strAlbum) {
+            <p>
+              <strong>Álbum:</strong>
+              @if (relatedAlbumUrl) {
+                <a [routerLink]="relatedAlbumUrl">{{ track.strAlbum }}</a>
+              } @else {
+                {{ track.strAlbum }}
+              }
+            </p>
+          }
+          @if (track.strMusicVid) {
+            <p>
+              <a
+                [href]="track.strMusicVid"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="button">
+                Ver videoclip
+              </a>
+            </p>
+          }
+        </div>
+      }
+
+      @if (biography) {
+        <section class="biography">
+          <h2>{{ artist ? 'Biografía' : 'Información' }}</h2>
+          <p>{{ biography }}</p>
+        </section>
+      } @else {
+        <p class="notice">
+          no hay una descripcion para esta cancion.
+        </p>
+      }
+
+      @if (artist) {
+        <section class="related-section">
+          <h2>Álbumes</h2>
+          @if (relatedLoading && artistAlbums.length === 0) {
+            <p class="notice">Cargando álbumes...</p>
+          }
+          @if (artistAlbums.length) {
+            <div class="related-grid">
+              @for (item of artistAlbums; track item) {
+                <app-music-card [item]="item" (itemSelected)="openItem($event)"></app-music-card>
+              }
+            </div>
+          }
+          @if (!relatedLoading && artistAlbums.length === 0) {
+            <p class="notice">No hay álbumes disponibles para este artista.</p>
+          }
+
+          <h2 class="related-heading">Canciones destacadas</h2>
+          @if (relatedLoading && artistTracks.length === 0) {
+            <p class="notice">Cargando canciones...</p>
+          }
+          @if (artistTracks.length) {
+            <div class="related-grid">
+              @for (item of artistTracks; track item) {
+                <app-music-card [item]="item" (itemSelected)="openItem($event)"></app-music-card>
+              }
+            </div>
+          }
+          @if (!relatedLoading && artistTracks.length === 0) {
+            <p class="notice">No hay canciones disponibles para este artista.</p>
+          }
+        </section>
+      }
+    </section>
+  }
+
+  @if (!loading && notFound) {
+    <section class="detail-card">
       <div class="detail-icon">♫</div>
-    </ng-template>
-
-    <p class="eyebrow">{{ typeLabel }}</p>
-    <h1>{{ title }}</h1>
-
-    <p class="subtitle" *ngIf="subtitle">{{ subtitle }}</p>
-
-    <div class="metadata" *ngIf="artist">
-      <p *ngIf="artist.intFormedYear">
-        <strong>Año de formación:</strong> {{ artist.intFormedYear }}
+      <h1>Información no disponible</h1>
+      <p>
+        {{ error || 'No hay información para este elemento.' }}
       </p>
-      <p *ngIf="artist.strCountry">
-        <strong>País:</strong> {{ artist.strCountry }}
-      </p>
-      <p *ngIf="artist.strGenre || artist.strStyle">
-        <strong>Género:</strong> {{ artist.strGenre || artist.strStyle }}
-      </p>
-      <p *ngIf="artist.strMood">
-        <strong>Estilo:</strong> {{ artist.strMood }}
-      </p>
-      <p *ngIf="artist.strWebsite">
-        <strong>Web oficial:</strong>
-        <a
-          [href]="artist.strWebsite.startsWith('http') ? artist.strWebsite : 'https://' + artist.strWebsite"
-          target="_blank"
-          rel="noopener noreferrer">
-          {{ artist.strWebsite }}
-        </a>
-      </p>
-      <p *ngIf="artist.strFacebook">
-        <strong>Facebook:</strong>
-        <a [href]="artist.strFacebook" target="_blank" rel="noopener noreferrer">
-          Visitar perfil
-        </a>
-      </p>
-      <p *ngIf="artist.strTwitter">
-        <strong>Twitter:</strong>
-        <a [href]="artist.strTwitter" target="_blank" rel="noopener noreferrer">
-          Visitar perfil
-        </a>
-      </p>
-    </div>
-
-    <div class="metadata" *ngIf="album">
-      <p *ngIf="album.intYearReleased">
-        <strong>Año:</strong> {{ album.intYearReleased }}
-      </p>
-      <p *ngIf="album.strGenre">
-        <strong>Género:</strong> {{ album.strGenre }}
-      </p>
-      <p *ngIf="album.strArtist">
-        <strong>Artista:</strong>
-        <a *ngIf="relatedArtistUrl; else albumArtistText" [routerLink]="relatedArtistUrl">{{ album.strArtist }}</a>
-        <ng-template #albumArtistText>{{ album.strArtist }}</ng-template>
-      </p>
-    </div>
-
-    <div class="metadata" *ngIf="track">
-      <p *ngIf="duration">
-        <strong>Duración:</strong> {{ duration }}
-      </p>
-      <p *ngIf="track.strGenre">
-        <strong>Género:</strong> {{ track.strGenre }}
-      </p>
-      <p *ngIf="track.strArtist">
-        <strong>Artista:</strong>
-        <a *ngIf="relatedArtistUrl; else trackArtistText" [routerLink]="relatedArtistUrl">{{ track.strArtist }}</a>
-        <ng-template #trackArtistText>{{ track.strArtist }}</ng-template>
-      </p>
-      <p *ngIf="track.strAlbum">
-        <strong>Álbum:</strong>
-        <a *ngIf="relatedAlbumUrl; else trackAlbumText" [routerLink]="relatedAlbumUrl">{{ track.strAlbum }}</a>
-        <ng-template #trackAlbumText>{{ track.strAlbum }}</ng-template>
-      </p>
-      <p *ngIf="track.strMusicVid">
-        <a
-          [href]="track.strMusicVid"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button">
-          Ver videoclip
-        </a>
-      </p>
-    </div>
-
-    <section class="biography" *ngIf="biography">
-      <h2>{{ artist ? 'Biografía' : 'Información' }}</h2>
-      <p>{{ biography }}</p>
+      <a routerLink="/buscar" class="button">Volver a buscar</a>
     </section>
-
-    <p *ngIf="!biography" class="notice">
-     no hay una descripcion para esta cancion.
-    </p>
-
-
-    <section class="related-section" *ngIf="artist">
-      <h2>Álbumes</h2>
-      <p *ngIf="relatedLoading && artistAlbums.length === 0" class="notice">Cargando álbumes...</p>
-      <div class="related-grid" *ngIf="artistAlbums.length">
-        <app-music-card *ngFor="let item of artistAlbums" [item]="item" (itemSelected)="openItem($event)"></app-music-card>
-      </div>
-      <p *ngIf="!relatedLoading && artistAlbums.length === 0" class="notice">No hay álbumes disponibles para este artista.</p>
-
-      <h2 class="related-heading">Canciones destacadas</h2>
-      <p *ngIf="relatedLoading && artistTracks.length === 0" class="notice">Cargando canciones...</p>
-      <div class="related-grid" *ngIf="artistTracks.length">
-        <app-music-card *ngFor="let item of artistTracks" [item]="item" (itemSelected)="openItem($event)"></app-music-card>
-      </div>
-      <p *ngIf="!relatedLoading && artistTracks.length === 0" class="notice">No hay canciones disponibles para este artista.</p>
-    </section>
-
-    <section class="related-section" *ngIf="album">
-      <h2>Canciones del álbum</h2>
-      <p *ngIf="relatedLoading && albumTracks.length === 0" class="notice">Cargando canciones...</p>
-      <div class="related-grid" *ngIf="albumTracks.length">
-        <app-music-card *ngFor="let item of albumTracks" [item]="item" (itemSelected)="openItem($event)"></app-music-card>
-      </div>
-      <p *ngIf="!relatedLoading && albumTracks.length === 0" class="notice">No hay canciones disponibles para este álbum.</p>
-    </section>
-  </section>
-
-  <section *ngIf="!loading && notFound" class="detail-card">
-    <div class="detail-icon">♫</div>
-    <h1>Información no disponible</h1>
-    <p>
-      {{ error || 'No hemos encontrado información para este elemento.' }}
-    </p>
-    <a routerLink="/buscar" class="button">Volver a buscar</a>
-  </section>
+  }
 </main>
