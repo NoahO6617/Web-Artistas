@@ -45,7 +45,7 @@ export class Search implements OnInit, OnDestroy {
     this.searchSubscription?.unsubscribe();
   }
 
-  // Inicia la búsqueda y cancela la petición anterior si todavía sigue activa
+  // Inicia la búsqueda y cancela la petición anterior si todavía sigue activa, parte hecha con Ia
   onQueryChange(query: string): void {
     this.query = query.trim();
 
